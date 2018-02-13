@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.mapper.UserMapper">
+  <cache />
+  
+<select id="findUserById" resultType="User">
+    select * from user where id=#{id}
+</select>
+
+<select id="findUserByName" resultType="User">
+select * from user where name=#{name} limit 1
+</select>
+
+  <insert id="createUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO user
+      (name,password,mail)
+    VALUES
+      (#{name}, #{password},#{mail})
+  </insert>
+  
+    <insert id="addTag2User" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO user_tag
+      (user_id,tag)
+    VALUES
+      (#{userId}, #{tag})
+  </insert>
+  
+  <update id="updateUser" parameterType="User">
+    UPDATE user SET
+        name = #{name},
+        mail = #{mail},
+        password=#{password},
+        introduction=#{introduction},
+        avatar=#{avatar}
+    WHERE id = #{id}
+  </update>
+  
+  <insert id="addFavor" useGeneratedKeys="true" keyProperty="id">
+  INSERT INTO favor
+  (user_id,book_id,create_date)
+  VALUES
+  (#{userId},#{bookId},#{createDate})
+  </insert>
+  
+  <select id="userReadSize" resultType="java.lang.Integer">
+  select count(*) from comment where user_id=#{id}
+  </select>
+  
+    <select id="userFavored" resultType="java.lang.Integer">
+  select count(*) from favor where user_id=#{userId} and book_id=#{bookId}
+  </select>
+  
+    <select id="userFavorSize" resultType="java.lang.Integer">
+  select count(*) from favor where user_id=#{id}
+  </select>
+  
+  <delete id="deleteFavor">
+  DELETE FROM favor where user_id=#{userId} and book_id=#{bookId}
+  </delete>
+  
+  <delete id="deleteTagFromUser">
+  DELETE FROM user_tag where user_id=#{userId} and tag=#{tag}
+  </delete>
+  
+  
+  <select id="userRead" resultType="java.lang.Integer">
+  select count(distinct book_id) from comment where user_id=#{id}</select>
+  
+    <select id="userFavor" resultType="java.lang.Integer">
+  select count(distinct book_id) from favor where user_id=#{id}</select>
+  
+  <select id="viewedBooks" resultMap="com.br.mapper.BookMapper.bookDetail">
+  select distinct b.* from book b,comment c where c.book_id=b.id and c.user_id=#{id}
+  </select>
+  
+    <select id="favorBooks" resultMap="com.br.mapper.BookMapper.bookDetail">
+  select distinct b.* from book b,favor c where c.book_id=b.id and c.user_id=#{id}
+  </select>
+  
+  <select id="firstReadBook" resultMap="com.br.mapper.BookMapper.bookDetail">
+  select b.* from book b,comment c where b.id=c.book_id and c.user_id=#{id} order by c.create_date limit 1
+  </select>
+  
+    <select id="lastReadBook" resultMap="com.br.mapper.BookMapper.bookDetail">
+  select b.* from book b,comment c where b.id=c.book_id and c.user_id=#{id} order by c.create_date desc limit 1
+  </select>
+  
+  <select id="avgScoreRead" resultType="java.lang.Double">
+  select avg(score)*2 from comment where user_id=#{id}
+  </select>
+  
+    <select id="avgScoreBooks" resultType="java.lang.Double">
+  select avg(b.rating) from book b,comment c where b.id=c.book_id and c.user_id=#{id}
+  </select>
+  
+  <select id="best" resultMap="com.br.mapper.BookMapper.bookDetail">
+  select b.* from book b,comment c where b.id=c.book_id and c.user_id=#{id} order by c.score desc limit 1;
+  </select>
+  
+    <select id="worst" resultMap="com.br.mapper.BookMapper.bookDetail">
+  select b.* from book b,comment c where b.id=c.book_id and c.user_id=#{id} order by c.score limit 1;
+  </select>
+  
+  
+  
+
+  
+  
+<!--  
+<resultMap id="questionDetail" type="Question">
+  <id property="id" column="id" />
+  <collection property="answers" column="id" ofType="Answer" select="findAnswersByQuestion"/>
+  <collection property="tags" column="id" ofType="Tag" select="findTagByQuestion"/>
+</resultMap>
+
+<select id="findAnswersByQuestion" resultType="Answer">
+  SELECT * FROM answer WHERE questionId = #{questionId}
+</select>
+
+<select id="findTagByQuestion" resultType="Tag">
+  SELECT tag.name FROM tag,question_tag_relation WHERE question_tag_relation.questionId = #{questionId} AND question_tag_relation.tag=tag.name;
+</select>
+
+<select id="findOne" resultMap="questionDetail">
+  SELECT * FROM question WHERE id = #{id}
+</select>
+
+
+
+
+  <select id="findAll" resultMap="questionAll">
+    SELECT * FROM question
+  </select>
+  
+  <resultMap id="questionAll" type="Question" autoMapping="true">
+  <id property="id" column="id" />
+  <collection property="tags"  column="id" ofType="Tag"  select="findTagByQuestion"/>
+</resultMap>
+  
+  
+
+  <select id="findByKey" resultMap="questionAll">
+    SELECT * FROM question
+    WHERE  title LIKE CONCAT('%',#{key},'%' ) or description LIKE  CONCAT('%',#{key},'%' );
+    </select>
+  
+  
+  <resultMap id="tagDetail" type="Question">
+  <id property="id" column="id" />
+  <collection property="tags" column="id" ofType="Tag" select="findTagByQuestion"/>
+</resultMap>
+  
+  <select id="findByTag" resultMap="tagDetail">
+   SELECT * FROM question,question_tag_relation
+   WHERE question.Id=question_tag_relation.questionId
+   AND question_tag_relation.tag=#{name};
+  </select>
+  
+  <insert id="create" parameterType="com.tianmaying.qa.model.Question" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO question
+      (title, description, createdTime)
+    VALUES
+      (#{title}, #{description}, #{createdTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <update id="update" parameterType="com.tianmaying.qa.model.Question">
+    UPDATE question SET
+        title = #{title},
+        description = #{description}
+    WHERE id = #{id}
+  </update>
+  
+  <delete id="delete">
+    DELETE FROM question WHERE id = #{id}
+  </delete>
+-->
+</mapper>

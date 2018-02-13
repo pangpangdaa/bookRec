@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BookDetail</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+<!-- 
+<script type="text/javascript" src="js/jquery-1.11.0.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+ -->
+<script type="text/javascript" th:src="@{/js/jquery-1.11.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+
+<script type="text/javascript">
+	window.onload = function() {
+		var star = document.getElementsByTagName('em');
+		var oDiv = document.getElementById('star-container');
+		var temp = 0;
+
+		for (var i = 0, len = star.length; i < len; i++) {
+			star[i].index = i;
+
+			star[i].onmouseover = function() {
+				clear();
+				for (var j = 0; j < this.index + 1; j++) {
+					star[j].style.background = "url(/img/star_onmouseover.png) ";
+				}
+			}
+
+			star[i].onmouseout = function() {
+				for (var j = 0; j < this.index + 1; j++) {
+					star[j].style.background = "url(/img/star_hollow_hover.png) ";
+				}
+				current(temp);
+			}
+
+			//某颗星点击的时候
+			star[i].onclick = function() {
+				temp = this.index + 1;
+				current(temp);
+			}
+		}
+		//清除所有
+		function clear() {
+			for (var i = 0, len = star.length; i < len; i++) {
+				star[i].style.background = "url(/img/star_hollow_hover.png) ";
+			}
+		}
+		//显示当前第几颗星
+		function current(temp) {
+			$("#score").val(temp);
+			for (var i = 0; i < temp; i++) {
+				star[i].style.background = "url(/img/star_onmouseover.png) ";
+			}
+		}
+		
+	};
+</script>
+<title>BookDetails</title>
+<style>
+p {
+	text-indent: 2em;
+	word-break: normal;
+}
+
+#star-container em {
+	float: left;
+	width: 16px;
+	height: 16px;
+	background: url(/img/star_hollow_hover.png)
+}
+
+#star-container {
+	margin-left: -145px;
+	position: relative;
+	min-height: 1px;
+	padding-right: 1px;
+	padding-left: 1px;
+	float: left;
+	text-align: left;
+	width: 400px;
+	margin-top: 10px;
+}
+
+#commond {
+	height: 200px;
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-top: 10px;
+}
+
+#modal-container {
+	height: 245px;
+	border: 1px solid #c3c3c3;
+	display: -webkit-flex; /* Safari */
+	-webkit-flex-direction: column; /* Safari 6.1+ */
+	display: flex;
+	-webkit-justify-content: flex-end;
+	justify-content: flex-end;
+	flex-direction: column;
+}
+
+#myModalLabel {
+	text-align: left;
+}
+
+#model-text-line {
+	position: relative;
+	min-height: 1px;
+	padding-right: 15px;
+	padding-left: 15px;
+	float: left;
+	text-align: left;
+	margin-top: 15px;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<!--导航条-->
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed"
+						data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+						aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">图书推荐</a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li><a href="/first_page">首页<span class="sr-only">(current)</span></a>
+						</li>
+						<li><a href="/ranklist">排行榜</a></li>
+						<li><a href="/discover">发现</a></li>
+						<li class="active"><a href="#">书籍详情</a></li>
+					</ul>
+					<ul class="nav nav-pills pull-right">
+						<li style="margin-right: 30px;">
+												<form class="navbar-form navbar-right" action="/search">
+								<div class="form-group">
+									<input name="words" type="text" class="form-control" placeholder="Search">
+								</div>
+								<button type="submit" class="btn btn-default">搜索</button>
+							</form>
+						</li>
+						<li role="presentation" class="active"><a href="/profile">个人中心<span class="badge"></span></a></li>
+							<li role="presentation" class="active"><a href="/login">登录 <span class="badge"></span></a></li>	
+					</ul>
+				</div>
+				<!-- /.navbar-collapse -->
+			</div>
+			<!-- /.container-fluid -->
+		</nav>
+		<!--图书照片以及metadata-->
+		
+		  <section class="comment-list">
+
+            <h4 class="page-header" th:text="@{'书籍:《 '+${book.name}+'》 的评论'+' 共'+${count}+'条'}">书籍评论</h4>
+         
+
+          <ul class="list-unstyled">
+            <li class="clearfix" th:each="comment:${comments.list}">
+                           <p class="content">
+                  <img th:src="@{'/pic/'+${comment.userId}}" style="width:100px;height:100px;" class="avatar img-circle" alt="avatar">
+                <a th:href="@{'/people/'+${comment.userId}}" th:text="${comment.commentor}">Harttle,</a>
+                <span th:text="${#dates.format(comment.createDate,'yyyy/MM/dd')}">4564546</span>     
+         
+                <p th:text="${comment.content}">
+                            Risus. Suspendisse faucibus orci et nunc. Nullam vehicula fermentum risus. Fusce felis nibh, dignissim
+                            vulputate, ultrices.
+                            </p>
+              </p>
+              <hr/>
+            </li>
+          </ul>
+          
+          
+
+
+         <!--
+          <li class="clearfix">
+            <img src="/img/catty.jpeg" alt="" class="avatar pull-left">
+            <p class="content">
+              <a href="#">David</a>
+              <span class="text-muted date">, yesterday</span>
+              Risus. Suspendisse faucibus orci et nunc. Nullam vehicula fermentum risus. Fusce felis nibh, dignissim
+              vulputate, ultrices.</p>
+          </li>
+        </ul>
+        -->
+      </section>
+		
+				            <nav>
+                <ul class="pager">
+                    <li th:if=${comments.hasPreviousPage} class="previous">
+                        <a th:href="@{'?page=' + ${comments.prePage} + '&pageSize=' + ${comments.pageSize}}">
+                        <span aria-hidden="true">&larr;
+                        </span> 上一页</a>
+                    </li>
+                    <li th:if=${comments.hasNextPage} class="next">
+                      <a th:href="@{'?page=' + ${comments.nextPage} + '&pageSize=' + ${comments.pageSize}}">下一页 
+                        <span aria-hidden="true">&rarr;</span>
+                    </a></li>
+                </ul>
+            </nav>
+	</div>
+</body>
+</html>

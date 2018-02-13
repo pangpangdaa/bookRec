@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>BC首页</title>
+		<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+		<script type="text/javascript" src="/js/jquery-1.11.0.js"></script>
+		<script type="text/javascript" src="/js/bootstrap.js"></script>
+		<style>
+			.bookItem{
+				/*border: 1px;width: 150px;*/
+			}
+			.bookInfo{
+				border: gainsboro solid 2px;
+				height: 200px;
+				width: 50%;
+				margin-left: 25%;
+				margin-right: 25%;
+			}
+			.lunboPic{
+				right: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+	<div class="container">
+		<!--导航条-->
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+		        <span class="sr-only">Toggle navigation</span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		      </button>
+					<a class="navbar-brand" href="#">图书推荐</a>
+				</div>
+		
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li >
+							<a href="/first_page">首页<span class="sr-only">(current)</span></a>
+						</li>
+						<li >
+							<a href="/ranklist">排行榜</a>
+						</li>
+						<li class="active">
+							<a href="/discover">发现</a>
+						</li>
+						
+					</ul>
+					<ul class="nav nav-pills pull-right">
+						<li style="margin-right: 30px;">
+													<form class="navbar-form navbar-right" action="/search">
+								<div class="form-group">
+									<input name="words" type="text" class="form-control" placeholder="Search">
+								</div>
+								<button type="submit" class="btn btn-default">搜索</button>
+							</form>
+						</li>
+						<li role="presentation" class="active"><a href="/profile">个人中心<span class="badge"></span></a></li>
+							<li role="presentation" class="active"><a href="/login">登录 <span class="badge"></span></a></li>	
+					</ul>
+				</div>
+				<!-- /.navbar-collapse -->
+			</div>
+			<!-- /.container-fluid -->
+		</nav>
+		<div th:if="${count} gt '0'">
+		<div>
+		<h2 th:text="@{'您一共评价过'+${count}+'本书'}"></h2>
+		<h2 th:text="@{'对所有您评价过的书，您给出的平均评分是: '+${avg.avgRead}}"></h2>
+		
+		<h2 th:text="@{'对所有您评价过的书，它们的平均评分是: '+${avg.avgBooks}}"></h2>
+		<hr/>
+		</div>
+		<h2>您第一本评论的书是:</h2>
+
+        		<div class="row">
+			<div class="col-md-4 col-sm-4 col-xs-12 bookItem">
+			<img class="pull-left" th:src="${personal.first.img3}" style="width: 90%;padding-left: 10%;"/>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-12 bookItem">
+				<table>
+					<tr>
+						<td>
+						</td>
+						<td>
+				
+						<p>
+						  <a th:href="@{'/book/'+${personal.first.id}}"  th:text="${personal.first.name}" >
+                          </a>
+                          </p>
+							<p th:text="@{'作者: '+${personal.first.author.name}}">作者:  罗贯</p>
+						
+							<p th:text="@{'出版社: '+${personal.first.publisher}}">出版社: 中华书局</p>
+							<p th:text="@{'评分: '+${personal.first.rating}}">评分: 9.5</p>
+							<p th:text="@{'定价: '+${personal.first.price}}">定价: 70.00元</p>
+							<p>装帧: 平装</p>
+							<p th:text="@{'ISBN: '+${personal.first.isbn}}"></p>
+							<p th:text="@{'简介: '+${personal.first.summary}}">简介：三国时期是个激动人心的时代。</p>
+						</td>
+						
+					</tr>
+				</table>
+			</div>
+			</div>
+			<hr />
+		<h2>您最近一本评论的书是:</h2>
+
+        		<div class="row">
+			<div class="col-md-4 col-sm-4 col-xs-12 bookItem">
+			<img class="pull-left" th:src="${personal.last.img3}" style="width: 90%;padding-left: 10%;"/>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-12 bookItem">
+				<table>
+					<tr>
+						<td>
+						</td>
+						<td>
+				
+						<p>
+						  <a th:href="@{'/book/'+${personal.last.id}}"  th:text="${personal.last.name}" >
+                          </a>
+                          </p>
+							<p th:text="@{'作者: '+${personal.last.author.name}}">作者:  罗贯</p>
+						
+							<p th:text="@{'出版社: '+${personal.last.publisher}}">出版社: 中华书局</p>
+							<p th:text="@{'评分: '+${personal.last.rating}}">评分: 9.5</p>
+							<p th:text="@{'定价: '+${personal.last.price}}">定价: 70.00元</p>
+							<p>装帧: 平装</p>
+							<p th:text="@{'ISBN: '+${personal.last.isbn}}"></p>
+							<p th:text="@{'简介: '+${personal.last.summary}}">简介：三国时期是个激动人心的时代。</p>
+						</td>
+						
+					</tr>
+				</table>
+			</div>
+			</div>
+			<hr />
+			
+			<h2>您评价最高的书是:</h2>
+
+        		<div class="row">
+			<div class="col-md-4 col-sm-4 col-xs-12 bookItem">
+			<img class="pull-left" th:src="${personal.best.img3}" style="width: 90%;padding-left: 10%;"/>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-12 bookItem">
+				<table>
+					<tr>
+						<td>
+						</td>
+						<td>
+				
+						<p>
+						  <a th:href="@{'/book/'+${personal.best.id}}"  th:text="${personal.best.name}" >
+                          </a>
+                          </p>
+							<p th:text="@{'作者: '+${personal.best.author.name}}">作者:  罗贯</p>
+						
+							<p th:text="@{'出版社: '+${personal.best.publisher}}">出版社: 中华书局</p>
+							<p th:text="@{'评分: '+${personal.best.rating}}">评分: 9.5</p>
+							<p th:text="@{'定价: '+${personal.best.price}}">定价: 70.00元</p>
+							<p>装帧: 平装</p>
+							<p th:text="@{'ISBN: '+${personal.best.isbn}}"></p>
+							<p th:text="@{'简介: '+${personal.best.summary}}">简介：三国时期是个激动人心的时代。</p>
+						</td>
+						
+					</tr>
+				</table>
+			</div>
+			</div>
+			<hr />
+			
+			<h2>您评价最低的书是:</h2>
+
+        		<div class="row">
+			<div class="col-md-4 col-sm-4 col-xs-12 bookItem">
+			<img class="pull-left" th:src="${personal.worst.img3}" style="width: 90%;padding-left: 10%;"/>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-12 bookItem">
+				<table>
+					<tr>
+						<td>
+						</td>
+						<td>
+				
+						<p>
+						  <a th:href="@{'/book/'+${personal.worst.id}}"  th:text="${personal.worst.name}" >
+                          </a>
+                          </p>
+							<p th:text="@{'作者: '+${personal.worst.author.name}}">作者:  罗贯</p>
+						
+							<p th:text="@{'出版社: '+${personal.worst.publisher}}">出版社: 中华书局</p>
+							<p th:text="@{'评分: '+${personal.worst.rating}}">评分: 9.5</p>
+							<p th:text="@{'定价: '+${personal.worst.price}}">定价: 70.00元</p>
+							<p>装帧: 平装</p>
+							<p th:text="@{'ISBN: '+${personal.worst.isbn}}"></p>
+							<p th:text="@{'简介: '+${personal.worst.summary}}">简介：三国时期是个激动人心的时代。</p>
+						</td>
+						
+					</tr>
+				</table>
+			</div>
+			</div>
+			
+			<hr />
+	</div>
+		<!--每日推荐-->
+			<h2>根据近期浏览记录，为您推荐</h2>
+
+		<div class="row" >
+			<!--一本书籍介绍-->
+				<!--中 - 4
+				小 - 6
+				超小 - 12-->
+			<div class="col-md-4 col-sm-6 col-xs-12 bookItem" th:each="book:${books}">
+							<div style="margin-top: 10px;">
+					<a th:href="@{'/book/'+${book.id}}">
+					<img th:src="${book.img2}" weight="150" height="150"/>
+					</a>
+				</div>
+									<td>
+				
+						<p>
+						  <a  style="font-size:15px;" th:href="@{'/book/'+${book.id}}"  th:text="${book.name}" >
+                          </a>
+                          </p>
+                          <p>
+							<a style="font-size:15px;" th:href="@{'/author/'+${book.author.id}}"  th:text="@{'作者: '+${book.author.name}}" />作者:  罗贯</p>
+						
+							<p style="font-size:15px;" th:text="@{'出版社: '+${book.publisher}}">出版社: 中华书局</p>
+							<p style="font-size:15px;" th:text="@{'评分: '+${book.rating}}">评分: 9.5</p>
+							<p style="font-size:15px;" th:text="@{'定价: '+${book.price}}">定价: 70.00元</p>
+							<p style="font-size:15px;">装帧: 平装</p>
+							<p style="font-size:15px;" th:text="@{'ISBN: '+${book.isbn}}"></p>
+							
+						</td>
+				<!--图片-->
+
+				<!--名称-->
+				<!-- 
+				<div th:text="${book.name}">
+					金锁记
+				</div>
+		
+				<div th:text="${book.authorId}">
+					张爱玲
+				</div >
+		
+				<div th:text="${book.publisher}">
+					哈尔滨出版社
+				</div>
+			
+				<div th:text="${book.rating}">
+					8.5
+				</div>
+				 -->
+			</div>
+			
+	</div>
+			
+
+
+		
+		</body>
+
+</html>

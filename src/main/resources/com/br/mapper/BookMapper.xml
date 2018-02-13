@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.mapper.BookMapper">
+
+  
+<resultMap type="Book" id="bookDetail">
+<id property="id" column="id"/>
+<collection property="author" column="id" ofType="Author" select="findAuthorByBook" />
+</resultMap> 
+
+<select id="getSimilarBook" resultMap="bookDetail">
+select b.* from book_similarity_icf s ,book b where b.id=s.book_id2 and s.book_id1=#{id}
+</select>
+
+<select id="findAuthorByBook" resultType="Author">
+select a.* from author a,book b where a.id=b.author_id and b.id=#{id}
+</select>
+ 
+<select id="findOne" resultMap="bookDetail">
+    select * from book where id=#{id}
+</select>
+
+<select id="getBookByTags" resultMap="bookDetail">
+select distinct b.* from book b,book_tag t where t.book_id=b.id and t.tag in 
+<foreach collection="tags" item="tag" index="index" open="(" separator="," close=")"> 
+#{tag}
+</foreach>
+</select>
+
+<select id="searchTags" resultMap="bookDetail">
+select distinct b.* from book b,book_tag t where t.book_id=b.id and ( t.tag like 
+<foreach collection="tags" item="tag" index="index"  separator=" or t.tag like " > 
+concat('%',#{tag},'%')
+</foreach>
+)
+</select>
+
+<select id="searchAuthors" resultMap="bookDetail">
+select distinct b.* from book b,author a where a.id=b.author_id and ( a.name like 
+<foreach collection="words" item="word" index="index"  separator=" or a.name like " > 
+concat('%',#{word},'%')
+</foreach>
+)
+</select>
+
+
+<select id="getBookByTag" resultMap="bookDetail">
+select b.* from book b,book_tag t where b.id=t.book_id and t.tag=#{tag}
+</select>
+<!--  
+<resultMap id="questionDetail" type="Question">
+  <id property="id" column="id" />
+  <collection property="answers" column="id" ofType="Answer" select="findAnswersByQuestion"/>
+  <collection property="tags" column="id" ofType="Tag" select="findTagByQuestion"/>
+</resultMap>
+
+<select id="findAnswersByQuestion" resultType="Answer">
+  SELECT * FROM answer WHERE questionId = #{questionId}
+</select>
+
+<select id="findTagByQuestion" resultType="Tag">
+  SELECT tag.name FROM tag,question_tag_relation WHERE question_tag_relation.questionId = #{questionId} AND question_tag_relation.tag=tag.name;
+</select>
+
+<select id="findOne" resultMap="questionDetail">
+  SELECT * FROM question WHERE id = #{id}
+</select>
+
+
+
+
+  <select id="findAll" resultMap="questionAll">
+    SELECT * FROM question
+  </select>
+  
+  <resultMap id="questionAll" type="Question" autoMapping="true">
+  <id property="id" column="id" />
+  <collection property="tags"  column="id" ofType="Tag"  select="findTagByQuestion"/>
+</resultMap>
+  
+  
+
+  <select id="findByKey" resultMap="questionAll">
+    SELECT * FROM question
+    WHERE  title LIKE CONCAT('%',#{key},'%' ) or description LIKE  CONCAT('%',#{key},'%' );
+    </select>
+  
+  
+  <resultMap id="tagDetail" type="Question">
+  <id property="id" column="id" />
+  <collection property="tags" column="id" ofType="Tag" select="findTagByQuestion"/>
+</resultMap>
+  
+  <select id="findByTag" resultMap="tagDetail">
+   SELECT * FROM question,question_tag_relation
+   WHERE question.Id=question_tag_relation.questionId
+   AND question_tag_relation.tag=#{name};
+  </select>
+  
+  <insert id="create" parameterType="com.tianmaying.qa.model.Question" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO question
+      (title, description, createdTime)
+    VALUES
+      (#{title}, #{description}, #{createdTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <update id="update" parameterType="com.tianmaying.qa.model.Question">
+    UPDATE question SET
+        title = #{title},
+        description = #{description}
+    WHERE id = #{id}
+  </update>
+  
+  <delete id="delete">
+    DELETE FROM question WHERE id = #{id}
+  </delete>
+-->
+</mapper>
